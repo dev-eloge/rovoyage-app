@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reservation', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('lieu_depart');
-            $table->string('lieu_arrive');
-            $table->date('date_aller');
-            $table->date('date_retour');
-            $table->string('email');
-            $table->string('phone', 20);
-            $table->timestamps();
+                $table->id();
+                $table->string('name');
+                $table->string('lieu_depart');
+                $table->string('lieu_arrive');
+                $table->date('date_aller');
+                $table->date('date_retour'); 
+                $table->string('email');
+                $table->string('phone', 20); 
+                $table->timestamps();
         });
     }
 
