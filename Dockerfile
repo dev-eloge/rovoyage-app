@@ -1,35 +1,50 @@
+# --- Étape 1 : compilation du CSS/JS (Tailwind + Vite) ---
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY vite.config.js ./
+COPY resources ./resources
+RUN npm run build
+
+# --- Étape 2 : application PHP ---
 FROM richarvey/nginx-php-fpm:3.1.6
 
+WORKDIR /var/www/html
 COPY . .
+COPY --from=assets /app/public/build ./public/build
 
-# Image config
-ENV SKIP_COMPOSER 0
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# Config de l'image
+ENV SKIP_COMPOSER=1
+ENV WEBROOT=/var/www/html/public
+ENV PHP_ERRORS_STDERR=1
+ENV RUN_SCRIPTS=1
+ENV REAL_IP_HEADER=1
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+# Config Laravel
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV LOG_CHANNEL=stderr
+# Sessions en cookie chiffré et cache en fichiers : aucune requête MySQL pour afficher une page
+# (la base n'est utilisée qu'à l'envoi du formulaire). Modifiable dans Render > Environment.
+ENV SESSION_DRIVER=cookie
+ENV CACHE_STORE=file
 
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Installation de PostgreSQL et autres dépendances
-RUN apk add --no-cache postgresql-dev && \
-    docker-php-ext-install pdo pdo_pgsql pgsql
+# Dossiers nécessaires à Laravel
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache/data \
+    storage/logs \
+    bootstrap/cache
 
-# Créer les dossiers nécessaires pour Laravel
-RUN mkdir -p /var/www/html/storage/framework/sessions \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/framework/cache \
-    /var/www/html/storage/logs \
-    /var/www/html/bootstrap/cache
+# Dépendances PHP installées au build (pas à chaque démarrage)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Définir les permissions correctes
-RUN chown -R nginx:nginx /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Permissions
+RUN chown -R nginx:nginx storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache && \
+    chmod +x scripts/*.sh
 
 CMD ["/start.sh"]

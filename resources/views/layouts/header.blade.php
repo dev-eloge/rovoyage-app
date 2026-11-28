@@ -1,118 +1,42 @@
+@php
+    $nav = [
+        ['href' => '#services', 'label' => 'Services'],
+        ['href' => '#destinations', 'label' => 'Destinations'],
+        ['href' => '#formation', 'label' => 'Formation'],
+        ['href' => '#contact', 'label' => 'Contact'],
+    ];
+@endphp
+<header id="site-header" class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-white/95 transition-[border-color,box-shadow] duration-200 data-[scrolled]:border-line data-[scrolled]:shadow-sm">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 lg:h-20 lg:px-8">
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5 rounded-lg" aria-label="ROVOYAGE, retour à l'accueil">
+            <img src="{{ asset('assets/logo-256.webp') }}" alt="" width="40" height="39" class="size-9 lg:size-10">
+            <span class="font-serif text-xl font-semibold tracking-tight text-brand">ROVOYAGE</span>
+        </a>
 
-<nav class="fixed w-full z-50 glass-nav transition-all duration-300 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <div class="flex items-center gap-3 cursor-pointer">
-                    <!-- Placeholder pour ton logo image -->
-                    <!-- Remplace src par le chemin de ton logo -->
-                    <div class="w-12 h-12  flex items-center justify-center overflow-hidden relative group">
-                         <img src="{{ asset('assets/faviconrovoyage.png') }}" alt="Logo" class="w-full h-full object-cover"> 
-                    </div>
-                    <span class="font-extrabold text-2xl tracking-tight text-brand-maroon font-serif">
-                        RO<span class="text-brand-gold">VOYAGE</span>
-                    </span>
-                </div>
+        <nav aria-label="Navigation principale" class="hidden items-center gap-8 md:flex">
+            @foreach ($nav as $item)
+                <a href="{{ $item['href'] }}" class="link-underline text-[0.9375rem] font-medium text-muted hover:text-brand">{{ $item['label'] }}</a>
+            @endforeach
+            <a href="#reservation" class="btn btn-primary min-h-11 px-5 text-[0.9375rem]">Réserver</a>
+        </nav>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#accueil" class="font-medium text-slate-600 hover:text-brand-maroon transition-colors relative group">
-                        Accueil
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-gold transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#services" class="font-medium text-slate-600 hover:text-brand-maroon transition-colors relative group">
-                        Services
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-gold transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#formations" class="font-medium text-slate-600 hover:text-brand-maroon transition-colors relative group">
-                        Formations
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-gold transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="https://facebook.com" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-brand-maroon to-red-800 text-white font-bold text-sm shadow-lg shadow-red-900/20 hover:shadow-red-900/40 hover:-translate-y-0.5 transition-all">
-                        Contactez-nous
-                    </a>
-                </div>
-                
-                <!-- Mobile menu btn -->
-                <button id="mobile-menu-btn" class="md:hidden text-brand-maroon text-3xl transition-transform duration-300 hover:scale-110">
-                    <i id="menu-icon" class="ph ph-list"></i>
-                </button>
-            </div>
+        <button id="menu-button" type="button" class="-mr-2 grid size-11 cursor-pointer place-items-center rounded-full text-brand transition-colors duration-150 hover:bg-cream md:hidden"
+                aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+            <x-icon name="menu" class="size-6" data-icon-open />
+            <x-icon name="x" class="hidden size-6" data-icon-close />
+        </button>
+    </div>
 
-            <!-- Mobile Menu Dropdown -->
-            <div id="mobile-menu" class="hidden md:hidden overflow-hidden transition-all duration-300 max-h-0">
-                <div class="px-4 py-4 space-y-3 bg-white/80 backdrop-blur border-t border-slate-200">
-                    <a href="#accueil" class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-brand-gold/10 hover:text-brand-maroon transition-colors font-medium">
-                        Accueil
-                    </a>
-                    <a href="#services" class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-brand-gold/10 hover:text-brand-maroon transition-colors font-medium">
-                        Services
-                    </a>
-                    <a href="#formations" class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-brand-gold/10 hover:text-brand-maroon transition-colors font-medium">
-                        Formations
-                    </a>
-                    <a href="https://facebook.com" class="block px-6 py-2.5 rounded-full bg-gradient-to-r from-brand-maroon to-red-800 text-white font-bold text-sm text-center shadow-lg shadow-red-900/20 hover:shadow-red-900/40 transition-all">
-                        Contactez-nous
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuIcon = document.getElementById('menu-icon');
-
-            mobileMenuBtn.addEventListener('click', () => {
-                const isOpen = mobileMenu.classList.contains('open');
-
-                if (!isOpen) {
-                    // Ouvrir le menu
-                    mobileMenu.classList.remove('hidden');
-                    mobileMenu.classList.add('open');
-                    mobileMenu.style.maxHeight = mobileMenu.scrollHeight + 'px';
-                    
-                    // Basculer l'icône
-                    menuIcon.className = 'ph ph-x animate-spin-fast';
-                } else {
-                    // Fermer le menu
-                    mobileMenu.style.maxHeight = '0';
-                    
-                    // Basculer l'icône
-                    menuIcon.className = 'ph ph-list';
-                    
-                    setTimeout(() => {
-                        mobileMenu.classList.add('hidden');
-                        mobileMenu.classList.remove('open');
-                    }, 300);
-                }
-            });
-
-            // Fermer le menu quand on clique sur un lien
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                    mobileMenu.classList.remove('open');
-                    mobileMenu.style.maxHeight = '0';
-                    menuIcon.className = 'ph ph-list';
-                });
-            });
-        });
-    </script>
-
-    <style>
-        @keyframes spin-fast {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(180deg);
-            }
-        }
-
-        .animate-spin-fast {
-            animation: spin-fast 0.3s ease-in-out forwards;
-        }
-    </style>
+    {{-- Menu mobile --}}
+    <div id="mobile-menu" class="pointer-events-none absolute inset-x-0 top-full -translate-y-2 border-b border-line bg-white opacity-0 shadow-md transition-[opacity,transform] duration-200 ease-out data-[open]:pointer-events-auto data-[open]:translate-y-0 data-[open]:opacity-100 md:hidden" inert>
+        <nav aria-label="Navigation mobile" class="mx-auto flex max-w-6xl flex-col px-5 pt-2 pb-6">
+            @foreach ($nav as $item)
+                <a href="{{ $item['href'] }}" class="flex min-h-12 items-center justify-between border-b border-line text-lg font-medium text-ink transition-colors duration-150 hover:text-brand" data-menu-link>
+                    {{ $item['label'] }}
+                    <x-icon name="arrow-right" class="size-5 text-slate-400" />
+                </a>
+            @endforeach
+            <a href="#reservation" class="btn btn-primary mt-6 w-full" data-menu-link>Réserver mon voyage</a>
+        </nav>
+    </div>
+</header>
